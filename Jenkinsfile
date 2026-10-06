@@ -10,10 +10,6 @@ pipeline {
         APP_PORT         = '8085'
     }
 
-    tools {
-        jdk 'JDK-17'
-    }
-
     stages {
 
         stage('Checkout') {
