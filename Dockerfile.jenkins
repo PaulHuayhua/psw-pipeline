@@ -1,0 +1,23 @@
+FROM jenkins/jenkins:lts-jdk17
+
+USER root
+
+RUN apt-get update && apt-get install -y \
+    maven \
+    curl \
+    unzip \
+    procps \
+    && rm -rf /var/lib/apt/lists/*
+
+ENV JMETER_VERSION=5.6.3
+ENV JMETER_HOME=/opt/jmeter
+ENV PATH="${JMETER_HOME}/bin:${PATH}"
+
+RUN curl -fsSL "https://archive.apache.org/dist/jmeter/binaries/apache-jmeter-${JMETER_VERSION}.tgz" \
+    | tar -xz -C /opt \
+    && mv /opt/apache-jmeter-${JMETER_VERSION} ${JMETER_HOME}
+
+COPY --chown=jenkins:jenkins plugins.txt /usr/share/jenkins/ref/plugins.txt
+RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt --skip-failed-plugins
+
+USER jenkins
